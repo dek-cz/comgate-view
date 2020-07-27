@@ -1,0 +1,14 @@
+{
+    "name": "dek-apps/comgate",
+    "type": "library",
+    "keywords": ["payment", "nette", "comgate", "php"],
+    "require": {
+        "php": ">=7.4",
+        "nette/nette": "^3.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "DekApps\\Comgate\\": "src/"
+        }
+    }
+}
