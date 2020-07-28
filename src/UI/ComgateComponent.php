@@ -7,6 +7,7 @@ namespace DekApps\Comgate\UI;
 use DekApps\Comgate\ComgateContainer;
 use Nette\Application\UI\Control;
 use Nette\Application\UI\Presenter;
+use DekApps\Comgate\ILoader;
 
 class ComgateComponent extends Control
 {
