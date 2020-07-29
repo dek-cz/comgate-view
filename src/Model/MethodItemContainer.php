@@ -7,7 +7,7 @@ namespace DekApps\Comgate\Model;
 final class MethodItemContainer
 {
 
-    private $items = [];
+    private array $items = [];
 
     public function getItem(string $id): IMethodItem
     {
@@ -17,6 +17,17 @@ final class MethodItemContainer
     public function addItem(IMethodItem $item): void
     {
         $this->items[$item->getId()] = $item;
+    }
+
+    public function getItems()
+    {
+        return $this->items;
+    }
+
+    public function setItems(IMethodItem ...$items)
+    {
+        $this->items = $items;
+        return $this;
     }
 
 }

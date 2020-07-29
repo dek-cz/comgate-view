@@ -10,10 +10,10 @@ use DekApps\Comgate\UI\ComgateComponent;
 use DekApps\Comgate\UI\IComgateComponentFactory;
 use DekApps\Comgate\ComgateContainer;
 use DekApps\Comgate\Comgate;
-use Nette\DI\ContainerBuilder;
-use Nette\DI\Definitions\ServiceDefinition;
-use Nette\Localization\ITranslator;
+use GuzzleHttp\Client;
+use Nette\DI\Statement;
 use Nette\DI\CompilerExtension;
+use Nette\Localization\ITranslator;
 use Nette\Schema\Expect;
 use Nette\Schema\Schema;
 use Nette\Utils\Strings;
@@ -22,8 +22,8 @@ class ComgateExtension extends CompilerExtension
 {
 
     private array $defaults = [
-        'translator' =>'',
-        'loader' =>'',
+        'translator' => '',
+        'loader' => '',
         'gateway' => '',
         'merchant' => '',
         'secret' => '',
@@ -64,35 +64,36 @@ class ComgateExtension extends CompilerExtension
 
 
         foreach ($config as $name => $comgate) {
-            $ccomgate = $this->validateConfig($this->defaults, (array)$comgate);
+            $ccomgate = $this->validateConfig($this->defaults, (array) $comgate);
 
             $translator = $ccomgate['translator'];
+            $translator = $builder->getDefinitionByType(ITranslator::class);
             if (!Strings::startsWith($ccomgate['translator'], '@')) {
-                $translator = $builder->addDefinition($this->prefix('comgateview.' . $name . '.translator'))
+                $translator = $builder->addDefinition($this->prefix($name . '.translator'))
                         ->setType($ccomgate['translator'])
                         ->setAutowired(false);
             }
             $loader = $ccomgate['loader'];
             if (!Strings::startsWith($ccomgate['loader'], '@')) {
-                $loader = $builder->addDefinition($this->prefix('comgateview.' . $name . '.loader'))
-                        ->setType($ccomgate['loader'])
-                        ->setAutowired(false);
-                        
+                $loader = $builder->addDefinition($this->prefix($name . '.loader'))
+                        ->setFactory($ccomgate['loader'], [new Statement(Client::class, [[
+                    'base_uri' => $ccomgate['gateway'],
+                ]])]);
             }
-            $loader->addSetup('setMerchant',[$ccomgate['merchant']])
-                        ->addSetup('setSecret',[$ccomgate['secret']])
-                        ->addSetup('setUri',[$ccomgate['gateway']])
-                        ->addSetup('setLang',[$ccomgate['lang']]);
+            $loader->addSetup('setMerchant', [$ccomgate['merchant']])
+                    ->addSetup('setSecret', [$ccomgate['secret']])
+                    ->addSetup('setUri', [$ccomgate['gateway']])
+                    ->addSetup('setLang', [$ccomgate['lang']]);
 
-            
-            $container->addSetup('addLoader',[$name,$loader]);
-            $container->addSetup('addItem',[ 
-                    $builder->addDefinition($this->prefix('comgateview.' . $name))
-            ->setType(Comgate::class)
-            ->setArguments([$name,$translator,$ccomgate['templates']])
-                    ]);
+
+            $container->addSetup('addLoader', [$name, $loader]);
+            $container->addSetup('addItem', [
+                        $builder->addDefinition($this->prefix($name))
+                        ->setType(Comgate::class)
+                        ->setArguments([$name, $translator, $ccomgate['templates']])
+            ]);
         }
-        var_dump($container);exit;
+//        var_dump($container);exit;
     }
 
 }

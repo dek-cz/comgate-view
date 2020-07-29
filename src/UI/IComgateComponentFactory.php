@@ -5,5 +5,5 @@ namespace DekApps\Comgate\UI;
 
 interface IComgateComponentFactory
 {
-    public function create(): ComgateComponent;
+    public function create(string $name): ComgateComponent;
 }

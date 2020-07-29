@@ -7,6 +7,7 @@ namespace DekApps\Comgate\Loader;
 use DekApps\Comgate\ILoader;
 use DekApps\Comgate\Model\MethodItemContainer;
 use GuzzleHttp\ClientInterface;
+use Psr\Http\Message\ResponseInterface;
 
 final class HttpLoader implements ILoader
 {
@@ -16,10 +17,31 @@ final class HttpLoader implements ILoader
     private string $secret;
     private string $lang;
     private string $uri;
+    private ?\stdClass $body = null;
 
     public function __construct(ClientInterface $client)
     {
         $this->client = $client;
+    }
+
+    private function getBody(ResponseInterface $origin): ?\stdClass
+    {
+        if ($this->body === null) {
+            $body = $origin->getBody();
+            $body->rewind();
+            $content = $body->getContents();
+            $this->body =json_decode($content);;
+        }
+        return $this->body;
+    }
+
+    protected function parseData(ResponseInterface $origin): ?\stdClass
+    {
+        $ret = null;
+        if ($origin->getStatusCode() === 200) {
+            $ret = $this->getBody($origin);
+        } // else log error
+        return $ret;
     }
 
     public function fetch(array $options = []): MethodItemContainer
@@ -34,9 +56,20 @@ final class HttpLoader implements ILoader
             'form_params' => $data,
         ]);
         $res = $this->client->request('POST', $this->uri, $options);
-        var_dump($res);
-        exit;
-        //@todo
+
+        $parsed =  $this->parseData($res);
+        $this->cast($parsed);
+        
+    }
+    
+    protected function cast(\stdClass $res){
+        
+        var_dump($res->methods);exit;
+        $ret = new MethodItemContainer();
+        if (isset($res->methods) && is_array($res->methods)){
+            
+        }
+        
     }
 
     public function setMerchant(string $merchant)

@@ -10,7 +10,7 @@ class MethodItem implements IMethodItem
     private string $logo;
     private string $description;
 
-    function __construct(string $id, string $name, string $logo, string $description)
+    public function __construct(string $id, string $name, string $logo, string $description)
     {
         $this->id = $id;
         $this->name = $name;

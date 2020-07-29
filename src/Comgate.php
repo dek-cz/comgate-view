@@ -10,13 +10,10 @@ use DekApps\Comgate\Model\MethodItemContainer;
 
 class Comgate implements IComgate
 {
-
     private string $name;
     private ITranslator $translator;
+    private MethodItemContainer $methods;
 
-    /**
-     * @var string[]
-     */
     private array $templates = [
         'methods' => null,
     ];
@@ -28,7 +25,6 @@ class Comgate implements IComgate
         $this->templates = $templates;
     }
 
-
     public function getName(): string
     {
         return $this->name;
@@ -39,8 +35,6 @@ class Comgate implements IComgate
         return $this->getTemplates()['methods'];
     }
 
-
-
     protected function getTranslator(): ITranslator
     {
         return $this->translator;
@@ -50,9 +44,16 @@ class Comgate implements IComgate
     {
         return $this->templates;
     }
-    
-   
 
+    public function getMethods(): MethodItemContainer
+    {
+        return $this->methods;
+    }
 
+    public function setMethods(MethodItemContainer $methods)
+    {
+        $this->methods = $methods;
+        return $this;
+    }
 
 }
