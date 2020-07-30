@@ -9,13 +9,14 @@
                 <div>{_'payments.com_comgate.methods.logo'}</div>
                 <div>{_'payments.com_comgate.methods.description'}</div>
             </div>
-            @todo: items
+                {foreach $comgate->getMethods()->getItems() as $item}       
             <div class="com-comgate__methods__body">
-                <div>{$id}</div>
-                <div>{$name}</div>
-                <div><img src="{$logourl}" /></div>
-                <div>{$descr}</div>
+                <div>{$item->getId()}</div>
+                <div>{$item->getName()}</div>
+                <div><img src="{$item->getLogo()}" /></div>
+                <div>{$item->getDescription()}</div>
             </div>
+                {/foreach}
 
         </tbody>
     </div>

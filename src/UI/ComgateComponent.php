@@ -27,7 +27,7 @@ class ComgateComponent extends Control
 
         $comgate = $this->container->getItem($this->name);
         $loader = $this->container->getLoader($this->name);
-        $loader->fetch();
+        $comgate->setMethods($loader->fetch());
         
 //        var_dump($comgate);
 //        exit;
