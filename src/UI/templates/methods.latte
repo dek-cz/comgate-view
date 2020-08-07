@@ -1,15 +1,15 @@
 
 <div class="container com-comgate">
-    <h2>{_'payments.com_comgate.methods.title'}</h2>
+    <h2>{_'comgate.methods.title'}</h2>
 
     <div class="com-comgate__methods">
             <div class="com-comgate__methods__header">
-                <div>{_'payments.com_comgate.methods.id'}</div>
-                <div>{_'payments.com_comgate.methods.name'}</div>
-                <div>{_'payments.com_comgate.methods.logo'}</div>
-                <div>{_'payments.com_comgate.methods.description'}</div>
+                <div>{_'comgate.methods.id'}</div>
+                <div>{_'comgate.methods.name'}</div>
+                <div>{_'comgate.methods.logo'}</div>
+                <div>{_'comgate.methods.description'}</div>
             </div>
-                {foreach $comgate->getMethods()->getItems() as $item}       
+                {foreach $comgate->getMethods()->getItems() as $item}
             <div class="com-comgate__methods__body">
                 <div>{$item->getId()}</div>
                 <div>{$item->getName()}</div>
