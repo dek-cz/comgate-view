@@ -2,23 +2,39 @@
 <div class="container com-comgate">
     <h2>{_'comgate.methods.title'}</h2>
 
-    <div class="com-comgate__methods">
-            <div class="com-comgate__methods__header">
+    {if $comgate->getDesign() === 'horizontal' }
+        <div class="com-comgate__methods">
+            <!--div class="com-comgate__methods__header" style="display: flex;">
                 <div>{_'comgate.methods.id'}</div>
                 <div>{_'comgate.methods.name'}</div>
                 <div>{_'comgate.methods.logo'}</div>
                 <div>{_'comgate.methods.description'}</div>
-            </div>
-                {foreach $comgate->getMethods()->getItems() as $item}
-            <div class="com-comgate__methods__body">
-                <div>{$item->getId()}</div>
-                <div>{$item->getName()}</div>
-                <div><img src="{$item->getLogo()}" /></div>
-                <div>{$item->getDescription()}</div>
-            </div>
-                {/foreach}
+            </div-->
+            {foreach $comgate->getMethods()->getItems() as $item}
+                <div class="com-comgate__methods__row row-{$item->getId()}" style="display: flex;justify-content: space-between;">
+                    <div class="com-comgate__methods__body__row__logo"><img class="com-comgate__methods__body__row__logo__image" src="{$item->getLogo()}" /></div>
+                    <!--div>{$item->getId()}</div-->
+                    <div class="com-comgate__methods__body__row__name"><span class="com-comgate__methods__body__row__name__title">{$item->getName()}</span></div>
+                    <div class="com-comgate__methods__body__row__description">{$item->getDescription()}</div>
+                </div>
 
-        </tbody>
-    </div>
+            {/foreach}
+        </div>
+    {else}
+        <div class="com-comgate__methods" style="display: flex;justify-content: space-between;">
+
+            {foreach $comgate->getMethods()->getItems() as $item}
+                <div class="com-comgate__methods__item__col col-{$item->getId()}" >
+                    <div class="com-comgate__methods__body__col__logo"><img class="com-comgate__methods__body__col__logo__image" src="{$item->getLogo()}" /></div>
+                    <!--div>{$item->getId()}</div-->
+                    <div class="com-comgate__methods__body__col__name"><h5 class="com-comgate__methods__body__col__name__title">{$item->getName()}</h5></div>
+                    <div class="com-comgate__methods__body__col__description">{$item->getDescription()}</div>
+                </div>
+            {/foreach}
+
+        </div>
+    {/if}
+
 
 </div>
+
