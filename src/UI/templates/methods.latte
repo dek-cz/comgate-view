@@ -1,7 +1,8 @@
 
 <div class="container com-comgate">
-    <h2>{_'comgate.methods.title'}</h2>
-
+    {if $comgate->getShowTitle()}
+        <h2>{_'comgate.methods.title'}</h2>
+    {/if}
     {if $comgate->getDesign() === 'horizontal' }
         <div class="com-comgate__methods">
             <!--div class="com-comgate__methods__header" style="display: flex;">
@@ -15,7 +16,9 @@
                     <div class="com-comgate__methods__body__row__logo"><img class="com-comgate__methods__body__row__logo__image" src="{$item->getLogo()}" /></div>
                     <!--div>{$item->getId()}</div-->
                     <div class="com-comgate__methods__body__row__name"><span class="com-comgate__methods__body__row__name__title">{$item->getName()}</span></div>
-                    <div class="com-comgate__methods__body__row__description">{$item->getDescription()}</div>
+                    {if $comgate->getShowDescription()}
+                        <div class="com-comgate__methods__body__row__description">{$item->getDescription()}</div>
+                    {/if}
                 </div>
 
             {/foreach}
@@ -28,7 +31,9 @@
                     <div class="com-comgate__methods__body__col__logo"><img class="com-comgate__methods__body__col__logo__image" src="{$item->getLogo()}" /></div>
                     <!--div>{$item->getId()}</div-->
                     <div class="com-comgate__methods__body__col__name"><h5 class="com-comgate__methods__body__col__name__title">{$item->getName()}</h5></div>
-                    <div class="com-comgate__methods__body__col__description">{$item->getDescription()}</div>
+                        {if $comgate->getShowDescription()}
+                        <div class="com-comgate__methods__body__col__description">{$item->getDescription()}</div>
+                    {/if}
                 </div>
             {/foreach}
 

@@ -29,6 +29,8 @@ class ComgateExtension extends CompilerExtension
         'secret' => '',
         'lang' => '',
         'design' => '',
+        'showTitle' => false,
+        'showDescription' => false,
         'templates' => [],
     ];
 
@@ -45,6 +47,8 @@ class ComgateExtension extends CompilerExtension
                             'secret' => Expect::string()->required(),
                             'lang' => Expect::string()->required()->default('cz'),
                             'design' => Expect::string()->default('vertical'),
+                            'showTitle' => Expect::bool()->default(false),
+                            'showDescription' => Expect::bool()->default(false),
                             'templates' => Expect::array()->default(['methods' => __DIR__ . '/../UI/templates/methods.latte']),
                 ]))->before(function ($val)
                 {
@@ -92,7 +96,7 @@ class ComgateExtension extends CompilerExtension
             $container->addSetup('addItem', [
                         $builder->addDefinition($this->prefix($name))
                         ->setType(Comgate::class)
-                        ->setArguments([$name, $translator, $ccomgate['templates'], $ccomgate['design']])
+                        ->setArguments([$name, $translator, $ccomgate['templates'], $ccomgate['design'],$ccomgate['showTitle'], $ccomgate['showDescription'],])
             ]);
         }
 //        var_dump($container);exit;

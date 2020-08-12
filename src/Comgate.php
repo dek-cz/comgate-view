@@ -15,16 +15,20 @@ class Comgate implements IComgate
     private ITranslator $translator;
     private MethodItemContainer $methods;
     private string $design = 'vertical';
+    private bool $showTitle = false;
+    private bool $showDescription = false;
     private array $templates = [
         'methods' => null,
     ];
 
-    public function __construct(string $name, ITranslator $translator, array $templates, string $design)
+    public function __construct(string $name, ITranslator $translator, array $templates, string $design, bool $showTitle, bool $showDescription)
     {
         $this->name = $name;
         $this->translator = $translator;
         $this->templates = $templates;
         $this->design = $design;
+        $this->showTitle = $showTitle;
+        $this->showDescription = $showDescription;
     }
 
     public function getName(): string
@@ -66,6 +70,28 @@ class Comgate implements IComgate
     public function setDesign(string $design)
     {
         $this->design = $design;
+        return $this;
+    }
+
+    public function getShowTitle(): bool
+    {
+        return $this->showTitle;
+    }
+
+    public function getShowDescription(): bool
+    {
+        return $this->showDescription;
+    }
+
+    public function setShowTitle(bool $showTitle)
+    {
+        $this->showTitle = $showTitle;
+        return $this;
+    }
+
+    public function setShowDescription(bool $showDescription)
+    {
+        $this->showDescription = $showDescription;
         return $this;
     }
 
