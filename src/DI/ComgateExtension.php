@@ -32,6 +32,7 @@ class ComgateExtension extends CompilerExtension
         'showTitle' => false,
         'showDescription' => false,
         'templates' => [],
+        'component' => '',
     ];
 
     public function getConfigSchema(): Schema
@@ -50,6 +51,7 @@ class ComgateExtension extends CompilerExtension
                             'showTitle' => Expect::bool()->default(false),
                             'showDescription' => Expect::bool()->default(false),
                             'templates' => Expect::array()->default(['methods' => __DIR__ . '/../UI/templates/methods.latte']),
+                            'component' => Expect::string()->default(ComgateComponent::class),
                 ]))->before(function ($val)
                 {
                     return is_array(reset($val)) || reset($val) === null ? $val : ['default' => $val];
@@ -63,14 +65,15 @@ class ComgateExtension extends CompilerExtension
 
         $container = $builder->addDefinition($this->prefix('container'))
                 ->setType(ComgateContainer::class);
-        $builder->addFactoryDefinition($this->prefix('comgateview.methods'))
-                ->setImplement(IComgateComponentFactory::class)
-                ->getResultDefinition()
-                ->setFactory(ComgateComponent::class);
 
 
         foreach ($config as $name => $comgate) {
             $ccomgate = $this->validateConfig($this->defaults, (array) $comgate);
+            
+            $builder->addFactoryDefinition($this->prefix($name.'.comgateview.methods'))
+                ->setImplement(IComgateComponentFactory::class)
+                ->getResultDefinition()
+                ->setFactory($ccomgate['component']);
 
             $translator = $ccomgate['translator'];
             $translator = $builder->getDefinitionByType(ITranslator::class);

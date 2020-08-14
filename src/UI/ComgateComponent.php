@@ -8,8 +8,9 @@ use DekApps\Comgate\ComgateContainer;
 use Nette\Application\UI\Control;
 use Nette\Application\UI\Presenter;
 use DekApps\Comgate\ILoader;
+use DekApps\Comgate\IComgate;
 
-class ComgateComponent extends Control
+class ComgateComponent extends Control implements IComgateComponent
 {
 
     private ComgateContainer $container;
@@ -21,16 +22,21 @@ class ComgateComponent extends Control
         $this->name = $name;
     }
 
+    public function getComgate(): IComgate
+    {
+        $comgate = $this->container->getItem($this->name);
+        $loader = $this->container->getLoader($this->name);
+        if (! $comgate->isMethodsSet()) {
+            $comgate->setMethods($loader->fetch());
+        }
+        return $comgate;
+    }
 
     public function render(): void
     {
 
-        $comgate = $this->container->getItem($this->name);
-        $loader = $this->container->getLoader($this->name);
-        $comgate->setMethods($loader->fetch());
-        
-//        var_dump($comgate);
-//        exit;
+        $comgate = $this->getComgate();
+
         $this->template->setFile($comgate->getMethodTemplate());
         $this->template->comgate = $comgate;
         $this->template->render();

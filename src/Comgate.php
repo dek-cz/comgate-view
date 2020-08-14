@@ -13,7 +13,7 @@ class Comgate implements IComgate
 
     private string $name;
     private ITranslator $translator;
-    private MethodItemContainer $methods;
+    private ?MethodItemContainer $methods = null;
     private string $design = 'vertical';
     private bool $showTitle = false;
     private bool $showDescription = false;
@@ -60,6 +60,11 @@ class Comgate implements IComgate
     {
         $this->methods = $methods;
         return $this;
+    }
+
+    public function isMethodsSet(): bool
+    {
+        return $this->methods ? true : false;
     }
 
     public function getDesign(): string
