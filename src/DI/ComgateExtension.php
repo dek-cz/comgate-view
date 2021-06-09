@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace DekApps\Comgate\DI;
 
@@ -31,6 +31,7 @@ class ComgateExtension extends CompilerExtension
         'design' => '',
         'showTitle' => false,
         'showDescription' => false,
+        'filter' => [],
         'templates' => [],
         'component' => '',
     ];
@@ -41,21 +42,22 @@ class ComgateExtension extends CompilerExtension
 //                    'default' => Expect::array(),
 //        ]);
         return Expect::arrayOf(Expect::structure([
-                            'translator' => Expect::string()->required()->default(FakeTranslator::class),
-                            'loader' => Expect::string()->default(HttpLoader::class),
-                            'gateway' => Expect::string()->required()->default('https://payments.comgate.cz/v1.0/methods'),
-                            'merchant' => Expect::string()->required(),
-                            'secret' => Expect::string()->required(),
-                            'lang' => Expect::string()->required()->default('cz'),
-                            'design' => Expect::string()->default('vertical'),
-                            'showTitle' => Expect::bool()->default(false),
-                            'showDescription' => Expect::bool()->default(false),
-                            'templates' => Expect::array()->default(['methods' => __DIR__ . '/../UI/templates/methods.latte']),
-                            'component' => Expect::string()->default(ComgateComponent::class),
-                ]))->before(function ($val)
-                {
-                    return is_array(reset($val)) || reset($val) === null ? $val : ['default' => $val];
-                });
+                    'translator' => Expect::string()->required()->default(FakeTranslator::class),
+                    'loader' => Expect::string()->default(HttpLoader::class),
+                    'gateway' => Expect::string()->required()->default('https://payments.comgate.cz/v1.0/methods'),
+                    'merchant' => Expect::string()->required(),
+                    'secret' => Expect::string()->required(),
+                    'lang' => Expect::string()->required()->default('cz'),
+                    'design' => Expect::string()->default('vertical'),
+                    'showTitle' => Expect::bool()->default(false),
+                    'showDescription' => Expect::bool()->default(false),
+                    'filter' => Expect::array()->default([]),
+                    'templates' => Expect::array()->default(['methods' => __DIR__ . '/../UI/templates/methods.latte']),
+                    'component' => Expect::string()->default(ComgateComponent::class),
+            ]))->before(function ($val)
+            {
+                return is_array(reset($val)) || reset($val) === null ? $val : ['default' => $val];
+            });
     }
 
     public function loadConfiguration(): void
@@ -64,13 +66,11 @@ class ComgateExtension extends CompilerExtension
         $builder = $this->getContainerBuilder();
 
         $container = $builder->addDefinition($this->prefix('container'))
-                ->setType(ComgateContainer::class);
-
+            ->setType(ComgateContainer::class);
 
         foreach ($config as $name => $comgate) {
             $ccomgate = $this->validateConfig($this->defaults, (array) $comgate);
-            
-            $builder->addFactoryDefinition($this->prefix($name.'.comgateview.methods'))
+            $builder->addFactoryDefinition($this->prefix($name . '.comgateview.methods'))
                 ->setImplement(IComgateComponentFactory::class)
                 ->getResultDefinition()
                 ->setFactory($ccomgate['component']);
@@ -79,27 +79,27 @@ class ComgateExtension extends CompilerExtension
             $translator = $builder->getDefinitionByType(ITranslator::class);
             if (!Strings::startsWith($ccomgate['translator'], '@')) {
                 $translator = $builder->addDefinition($this->prefix($name . '.translator'))
-                        ->setType($ccomgate['translator'])
-                        ->setAutowired(false);
+                    ->setType($ccomgate['translator'])
+                    ->setAutowired(false);
             }
             $loader = $ccomgate['loader'];
             if (!Strings::startsWith($ccomgate['loader'], '@')) {
                 $loader = $builder->addDefinition($this->prefix($name . '.loader'))
-                        ->setFactory($ccomgate['loader'], [new Statement(Client::class, [[
-                    'base_uri' => $ccomgate['gateway'],
+                    ->setFactory($ccomgate['loader'], [new Statement(Client::class, [[
+                        'base_uri' => $ccomgate['gateway'],
                 ]])]);
             }
             $loader->addSetup('setMerchant', [$ccomgate['merchant']])
-                    ->addSetup('setSecret', [$ccomgate['secret']])
-                    ->addSetup('setUri', [$ccomgate['gateway']])
-                    ->addSetup('setLang', [$ccomgate['lang']]);
-
+                ->addSetup('setSecret', [$ccomgate['secret']])
+                ->addSetup('setUri', [$ccomgate['gateway']])
+                ->addSetup('setFilter', [$ccomgate['filter']])
+                ->addSetup('setLang', [$ccomgate['lang']]);
 
             $container->addSetup('addLoader', [$name, $loader]);
             $container->addSetup('addItem', [
-                        $builder->addDefinition($this->prefix($name))
-                        ->setType(Comgate::class)
-                        ->setArguments([$name, $translator, $ccomgate['templates'], $ccomgate['design'],$ccomgate['showTitle'], $ccomgate['showDescription'],])
+                    $builder->addDefinition($this->prefix($name))
+                    ->setType(Comgate::class)
+                    ->setArguments([$name, $translator, $ccomgate['templates'], $ccomgate['design'], $ccomgate['showTitle'], $ccomgate['showDescription'],])
             ]);
         }
 //        var_dump($container);exit;

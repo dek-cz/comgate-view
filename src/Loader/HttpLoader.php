@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace DekApps\Comgate\Loader;
 
@@ -19,6 +19,7 @@ final class HttpLoader implements ILoader
     private string $lang;
     private string $uri;
     private ?\stdClass $body = null;
+    private array $filter = [];
 
     public function __construct(ClientInterface $client)
     {
@@ -67,8 +68,12 @@ final class HttpLoader implements ILoader
     protected function cast(\stdClass $res): MethodItemContainer
     {
         $ret = new MethodItemContainer();
+        $filter = $this->getFilter();
         if (isset($res->methods) && is_array($res->methods)) {
             foreach ($res->methods as $m) {
+                if (!empty($filter) && !in_array($m->id, $filter)) {
+                    continue;
+                }
                 $ret->addItem(new MethodItem($m->id, $m->name, $m->logo, $m->description));
             }
         }
@@ -97,6 +102,16 @@ final class HttpLoader implements ILoader
     {
         $this->uri = $uri;
         return $this;
+    }
+
+    public function getFilter(): array
+    {
+        return $this->filter;
+    }
+
+    public function setFilter(array $filter): void
+    {
+        $this->filter = $filter;
     }
 
 }
