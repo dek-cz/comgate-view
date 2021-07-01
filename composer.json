@@ -1,5 +1,5 @@
 {
-    "name": "dek-apps/comgate",
+    "name": "dek-cz/comgate-view",
     "type": "library",
     "keywords": ["payment", "nette", "comgate", "php"],
     "require": {
